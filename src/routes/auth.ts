@@ -1,63 +1,64 @@
-import express, { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import { sign } from "jsonwebtoken";
+import express, { Request, Response, NextFunction } from "express";
+import { ExpressRequest } from "../types/express.d";
+import { AthleteAuthService } from "../services/athlete-auth.service";
 import dotenv from "dotenv";
-import { AppDataSource } from "../database/config";
-import { Manager } from "../entities/manager.entity";
+
 dotenv.config();
 
 const router = express.Router();
-const managerRepository = AppDataSource.getRepository(Manager);
-// type Authentication = Either<HandleResponseError, { token: string }>;
+const athleteAuthService = new AthleteAuthService();
 
-const loginService = async (data: {
-  senha: string;
-  cpf: string;
-}): Promise<any> => {
+const authenticateAthlete = async (req: ExpressRequest, res: Response, next: NextFunction) => {
+    try {
+        const { cpf, password } = req.body;
 
-  const { senha, cpf } = data;
+        if (!cpf || !password) {
+            res.status(400).json({
+                success: false,
+                message: "CPF e senha são obrigatórios"
+            });
+            return;
+        }
 
-  const user = await managerRepository.findOne({
-    where: {
-        cpf: cpf,
-        password: senha
+        const result = await athleteAuthService.authenticate(cpf, password);
+
+        if (!result.success) {
+            res.status(401).json(result);
+            return;
+        }
+
+        req.athlete = {
+            id: result.data.athlete.id,
+            cpf: result.data.athlete.cpf,
+            role: result.data.athlete.role
+        };
+        req.accessToken = result.data.accessToken;
+        next();
+    } catch (error) {
+        console.error("Erro na rota de login do atleta:", error);
+        res.status(500).json({
+            success: false,
+            message: "Erro interno do servidor"
+        });
     }
-  })
-
-  if (!user) {
-    return false;
-  }
-
-  const senhaCorreta = await bcrypt.compare(senha, user.password);
-
-  if (!senhaCorreta) {
-    return false
-  }
-
-  const { id, name } = user;
-
-  const token = sign({ id, name }, "osn2in0nmx--!@34noxm", {
-    expiresIn: "30m",
-  });
-
-  return {accessToken: token};
 };
 
-router.post("/", async (req: Request, res: Response): Promise<any> => {
-
-  const { cpf, senha } = req.body;
-
-  const result = await loginService({ senha, cpf });
-
-  if (result === false) {
-    return res.status(400).json({
-      message: "Usuário não existente ou credenciais inválidas",
+router.post("/", authenticateAthlete, (req: ExpressRequest, res: Response) => {
+    if (!req.athlete || !req.accessToken) {
+        res.status(401).json({
+            success: false,
+            message: "Athlete not authenticated"
+        });
+        return;
+    }
+    
+    res.status(200).json({
+        success: true,
+        data: {
+            accessToken: req.accessToken,
+            athlete: req.athlete
+        }
     });
-  }
-
-  console.log(JSON.stringify(result));
-
-  return res.status(200).json(result);
-})
+});
 
 export default router;

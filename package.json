@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "testSingleFile": "cross-env NODE_ENV=test node --test --import tsx src/tests/enrollment.test.ts",
-    "test": "cross-env NODE_ENV=test node --test --import tsx src/tests/**/*.test.ts",
-    "dev": "nodemon --watch \"src/\" -r \"tsconfig-paths/register\" --exec \"ts-node src/server.ts\" -e ts --env-file .env"
+    "test": "ts-node -r tsconfig-paths/register src/tests/userBase.test.ts",
+    "test:watch": "nodemon --watch \"src/\" -r \"tsconfig-paths/register\" --exec \"ts-node src/tests/userBase.test.ts\" -e ts",
+    "dev": "nodemon --watch \"src/\" -r \"tsconfig-paths/register\" --exec \"ts-node src/server.ts\" -e ts --env-file .env",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
   "author": "",
   "license": "ISC",
@@ -30,6 +31,7 @@
     "cross-env": "^7.0.3",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2"
   }

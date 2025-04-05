@@ -2,9 +2,11 @@
   "compilerOptions": {
     "lib": [
       "es5",
-      "es6"
+      "es6",
+      "es2017",
+      "es2022"
     ],
-    "target": "es5",
+    "target": "es2022",
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "./build",
@@ -14,11 +16,17 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "resolveJsonModule": true
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "allowJs": true
   },
   "include": [
-    "src/**/*.ts"
-, "src/tests/teacher.test.js"  ], // Incluindo todos os arquivos TypeScript
+    "src/**/*.ts",
+    "src/tests/**/*.ts"
+  ],
   "exclude": [
     "node_modules"
   ]

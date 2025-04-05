@@ -1,8 +1,8 @@
-import { athleteRouter, managerRouter, materialRouter, modalityRouter, teacherRouter, authRouter, enrollmentRouter } from "./routes";
+import express from "express";
 import { existsSync, unlinkSync } from "fs";
 import * as dotenv from "dotenv";
-import express from "express";
 import cors from "cors";
+import routes from "./routes";
 
 dotenv.config();
 
@@ -15,12 +15,8 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use("/api/material/", materialRouter);
-app.use("/api/userbase/", athleteRouter);
-app.use("/api/manager/", managerRouter);
-app.use("/api/teacher/", teacherRouter);
-app.use("/api/modality/", modalityRouter);
-app.use("/api/auth/", authRouter);
-app.use("/api/enrollment/", enrollmentRouter);
+
+// Configurar rotas
+app.use("/api/v1", routes);
 
 export default app;
