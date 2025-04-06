@@ -1,26 +1,29 @@
 import { DataSource } from 'typeorm';
 import 'reflect-metadata';
 import env from "../environment/env";
+import { join } from 'path';
 
 export const AppDataSource = new DataSource({
   type: 'sqlite',
-  // host: 'localhost',
-  // port: 3306,
-  // username: 'root',
-  // password: 'senha',
-  database: env.NODE_ENV ? 'db.test.sqlite' : 'db.sqlite',
-  // url:"",
-  synchronize: false, //sincroniza as alterações com o banco
-  logging: false, // loga as queries do banco
-  entities: ["src/entities/*{.ts,.js}"],
+  database: join(__dirname, '..', env.NODE_ENV === 'test' ? 'db.test.sqlite' : 'db.sqlite'),
+  synchronize: true,
+  logging: false,
+  entities: ["src/entities/*.ts"],
+  migrations: ["src/migrations/*.ts"],
+  subscribers: ["src/subscribers/*.ts"],
+  dropSchema: env.NODE_ENV === 'test'
 });
 
-AppDataSource.initialize()
-  .then(async () => {
-    AppDataSource.entityMetadatas.forEach(metadata => {
-      // console.log(`Load: Entity: ${metadata.name}, Table: ${metadata.tableName}`);
-    });
-  })
-  .catch((error) => {
-    console.error('Database connection error:', error);
-  });
+export async function initializeDatabase() {
+    try {
+        await AppDataSource.initialize();
+        console.log('Database initialized successfully');
+        
+        // Run migrations after initialization
+        await AppDataSource.runMigrations();
+        console.log('Migrations completed successfully');
+    } catch (error) {
+        console.error('Error during database initialization:', error);
+        throw error;
+    }
+}
