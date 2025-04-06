@@ -37,8 +37,11 @@ async function createTestAthlete() {
             addresses: []
         });
 
-        await athleteRepository.save(athlete);
+        const savedAthlete = await athleteRepository.save(athlete);
         console.log("Atleta de teste criado com sucesso!");
+        console.log("ID do atleta:", savedAthlete.id);
+        console.log("CPF:", savedAthlete.cpf);
+        console.log("Email:", savedAthlete.email);
 
         // Fechar conexão com o banco de dados
         await AppDataSource.destroy();

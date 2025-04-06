@@ -6,17 +6,20 @@
     "test": "ts-node -r tsconfig-paths/register src/tests/userBase.test.ts",
     "test:watch": "nodemon --watch \"src/\" -r \"tsconfig-paths/register\" --exec \"ts-node src/tests/userBase.test.ts\" -e ts",
     "dev": "nodemon --watch \"src/\" -r \"tsconfig-paths/register\" --exec \"ts-node src/server.ts\" -e ts --env-file .env",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "create-test-athlete": "ts-node -r tsconfig-paths/register src/scripts/create-test-athlete.ts"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^6.5.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.21.0",
+    "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.3",
     "nodemon": "^3.1.7",
@@ -26,8 +29,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.7.4",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
     "cross-env": "^7.0.3",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",

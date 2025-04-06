@@ -20,6 +20,7 @@ export class AthleteAuthService {
                 select: {
                     id: true,
                     cpf: true,
+                    name: true,
                     role: true,
                     password: true
                 }
@@ -36,6 +37,7 @@ export class AthleteAuthService {
             console.log("Atleta encontrado no banco de dados:", {
                 id: athlete.id,
                 cpf: athlete.cpf,
+                name: athlete.name,
                 role: athlete.role
             });
 
@@ -54,6 +56,7 @@ export class AthleteAuthService {
                 {
                     id: athlete.id,
                     name: athlete.name,
+                    cpf: athlete.cpf,
                     role: Number(athlete.role)
                 },
                 process.env.JWT_SECRET || "osn2in0nmx--!@34noxm",
@@ -69,6 +72,7 @@ export class AthleteAuthService {
                     athlete: {
                         id: athlete.id,
                         cpf: athlete.cpf,
+                        name: athlete.name,
                         role: Number(athlete.role)
                     }
                 }
