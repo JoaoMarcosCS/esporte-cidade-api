@@ -1,4 +1,4 @@
-import { athleteRouter, managerRouter, materialRouter, modalityRouter, teacherRouter, authRouter, enrollmentRouter } from "./routes";
+import { athleteRouter, managerRouter, materialRouter, modalityRouter, teacherRouter, authRouter, enrollmentRouter, registerRouter } from "./routes";
 import { existsSync, unlinkSync } from "fs";
 import * as dotenv from "dotenv";
 import express from "express";
@@ -22,5 +22,6 @@ app.use("/api/teacher/", teacherRouter);
 app.use("/api/modality/", modalityRouter);
 app.use("/api/auth/", authRouter);
 app.use("/api/enrollment/", enrollmentRouter);
+app.use("/api/register",registerRouter);
 
 export default app;

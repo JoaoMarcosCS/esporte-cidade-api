@@ -5,3 +5,4 @@ export {default as teacherRouter} from "./teacher";
 export {default as athleteRouter} from "./userBase";
 export {default as authRouter} from "./auth"
 export {default as enrollmentRouter} from "./enrollment"
+export {default as registerRouter} from "./register"
