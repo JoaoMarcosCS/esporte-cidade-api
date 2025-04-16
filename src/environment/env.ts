@@ -10,5 +10,6 @@ dotenv.config();
 
 const APP_PORT = process.env.APP_PORT;
 const NODE_ENV = process.env.NODE_ENV;
+const JWT_SECRET = process.env.JWT_SECRET;
 
-export default { APP_PORT, NODE_ENV };
+export default { APP_PORT, NODE_ENV, JWT_SECRET };
