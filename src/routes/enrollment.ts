@@ -1,23 +1,46 @@
 import express, { Request, Response } from "express";
 import { AppDataSource } from "../database/config";
 import { Athlete } from "../entities/athlete.entity";
+import { Modality } from "../entities/modality.entity";
+import { Enrollment } from "../entities/enrollment.entity";
 
 const router = express.Router();
-const userRepository = AppDataSource.getRepository(Athlete);
+const enrollmentRepository = AppDataSource.getRepository(Enrollment);
 
 router.post("/", async (req: Request, res: Response) => {
     try {
-        const { userId, modalityId } = req.body;
+        const { athleteId, modalityId } = req.body;
 
-        console.log("\n\n");
-        console.log(`user id: ${userId}`);
-        console.log(`modality id: ${modalityId}`);
-        console.log("\n\n");
+        const athlete = await AppDataSource.getRepository(Athlete).findOneBy({ id: athleteId });
+        const modality = await AppDataSource.getRepository(Modality).findOneBy({ id: modalityId });
 
-        res.status(500).json({message: "not implemented."});
+        const enrollment = enrollmentRepository.create(
+            {
+                athlete,
+                modality
+            }
+        );
+        await enrollmentRepository.save(enrollment);
+        res.status(201).json(enrollment);
     } catch (error) {
         console.error("error message", error.message);
+
         res.status(500).json({ message: "error message", error: error.message });
+    }
+});
+
+router.get("/", async (req: Request, res: Response) => {
+    try {
+        const filters = req.params;
+        const enrollments = await enrollmentRepository.find();
+
+        console.log("\n\n");        
+        console.log(filters);        
+        console.log("\n\n");        
+
+        res.status(200).json(enrollments);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 

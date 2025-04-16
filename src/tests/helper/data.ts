@@ -1,6 +1,6 @@
 import { Roles } from "src/enums/roles.enum";
 
-const modalitiesPlaceholder = [
+export const modalitiesPlaceholder = [
     {
         name: "Futebol",
         description: "Um esporte coletivo jogado com uma bola esférica.",
@@ -19,7 +19,7 @@ const modalitiesPlaceholder = [
     },
 ];
 
-const athletesPlaceholder = [
+export const athletesPlaceholder = [
     {
         name: "João Silva",
         password: "securepassword123",
@@ -44,7 +44,6 @@ const athletesPlaceholder = [
         responsible_person_cpf: "999.888.777-66",
         blood_type: "O+",
         allergy: "Nenhuma",
-        modalities: [modalitiesPlaceholder[0]],
         addresses: [],
     },
     {
@@ -71,28 +70,21 @@ const athletesPlaceholder = [
         responsible_person_cpf: "666.555.444-33",
         blood_type: "A-",
         allergy: "Amendoim",
-        modalities: [modalitiesPlaceholder[1]],
         addresses: [],
     },
 ];
 
-const enrollmentsPlaceholder = [
+export const enrollmentsPlaceholder = [
     {
-        athlete: athletesPlaceholder[0],
-        modality: modalitiesPlaceholder[0],
         active: true,
         aproved: true,
         created_at: new Date(),
         updated_at: new Date(),
     },
     {
-        athlete: athletesPlaceholder[1],
-        modality: modalitiesPlaceholder[1],
-        active: true,
+        active: false,
         aproved: false,
         created_at: new Date(),
         updated_at: new Date(),
-    },
+    }
 ];
-
-export { modalitiesPlaceholder, athletesPlaceholder, enrollmentsPlaceholder }

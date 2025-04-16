@@ -1,102 +1,34 @@
-import test, { describe, it, beforeEach, before, after } from "node:test";
+import test, { describe, beforeEach, after } from "node:test";
 import { AppDataSource } from "../database/config";
 import { Athlete } from "src/entities/athlete.entity";
 import { Modality } from "src/entities/modality.entity";
+import { Enrollment } from "src/entities/enrollment.entity";
+import { enrollmentsPlaceholder } from "./helper/data";
+import { createPlaceholderAthletes } from "./helper/createPlaceholderAthletes";
+import { createPlaceholderModalities } from "./helper/createPlaceholderModalities";
+import { createPlaceholderEnrollments } from "./helper/createPlaceholderEnrollments";
+import assert from "node:assert"
 import request from "supertest";
 import app from "src/app";
-import { Roles } from "src/enums/roles.enum";
 
-const BASE_URL = "/api/teacher/";
+const BASE_URL = "/api/enrollment/";
 
-const userRepository = AppDataSource.getRepository(Athlete);
+const athleteRepository = AppDataSource.getRepository(Athlete);
 const modalityRepository = AppDataSource.getRepository(Modality);
+const enrollmentRepository = AppDataSource.getRepository(Enrollment);
 
 beforeEach(async () => {
     if (!AppDataSource.isInitialized) {
         await AppDataSource.initialize();
     }
 
-    await userRepository.clear();
+    await enrollmentRepository.clear();
     await modalityRepository.clear();
+    await athleteRepository.clear();
 
-    const modalidades = [
-        modalityRepository.create({
-            name: "Futebol",
-            description: "Um esporte coletivo jogado com uma bola esférica.",
-            days_of_week: ["Segunda-feira", "Quarta-feira", "Sexta-feira"],
-            start_time: "15:00",
-            end_time: "17:00",
-            class_locations: ["Campo A", "Campo B"],
-        }),
-        modalityRepository.create({
-            name: "Basquete",
-            description: "Um esporte jogado por duas equipes que tentam marcar pontos arremessando a bola em uma cesta.",
-            days_of_week: ["Terça-feira", "Quinta-feira"],
-            start_time: "16:00",
-            end_time: "18:00",
-            class_locations: ["Ginásio"],
-        }),
-    ];
-
-    const atletas = [
-        userRepository.create({
-            name: "João Silva",
-            password: "securepassword123",
-            cpf: "111.222.333-44",
-            rg: "12.345.678-9",
-            birthday: "2005-06-15",
-            phone: "123456789",
-            photo_url: "https://example.com/photo/joao_silva.jpg",
-            email: "joao.silva@example.com",
-            role: Roles.ATHLETES,
-
-            father_name: "João Silva Sr.",
-            father_phone: "123456789",
-            father_cpf: "111.222.333-44",
-            father_email: "joao.silva.sr@example.com",
-            mother_name: "Maria Silva",
-            mother_phone: "987654321",
-            mother_cpf: "555.666.777-88",
-            mother_email: "maria.silva@example.com",
-            responsible_person_name: "Responsável Silva",
-            responsible_person_email: "responsavel.silva@example.com",
-            responsible_person_cpf: "999.888.777-66",
-            blood_type: "O+",
-            allergy: "Nenhuma",
-            modalities: [modalidades[0]],
-            addresses: [],
-        }),
-        userRepository.create({
-            name: "Carlos Santos",
-            password: "securepassword456",
-            cpf: "444.555.666-77",
-            rg: "87.654.321-0",
-            birthday: "2007-09-23",
-            phone: "111222333",
-            photo_url: "https://example.com/photo/carlos_santos.jpg",
-            email: "carlos.santos@example.com",
-            role: Roles.ATHLETES,
-
-            father_name: "Carlos Santos Sr.",
-            father_phone: "111222333",
-            father_cpf: "444.555.666-77",
-            father_email: "carlos.santos.sr@example.com",
-            mother_name: "Ana Santos",
-            mother_phone: "222333444",
-            mother_cpf: "777.888.999-00",
-            mother_email: "ana.santos@example.com",
-            responsible_person_name: "Responsável Santos",
-            responsible_person_email: "responsavel.santos@example.com",
-            responsible_person_cpf: "666.555.444-33",
-            blood_type: "A-",
-            allergy: "Amendoim",
-            modalities: [modalidades[1]],
-            addresses: [],
-        }),
-    ];
-
-    await modalityRepository.save(modalidades);
-    await userRepository.save(atletas);
+    await createPlaceholderAthletes();
+    await createPlaceholderModalities();
+    await createPlaceholderEnrollments();
 });
 
 after(async () => {
@@ -105,21 +37,18 @@ after(async () => {
     }
 });
 
-describe("testing enrollment subscription", () => {
-    test("subscription can successfully be made", async () => {
-        const athletes = await userRepository.find();
+describe("testing enrollment", () => {
+    test("enrollment can successfully be made", async () => {
+        const athletes = await athleteRepository.find();
         const modalities = await modalityRepository.find();
 
         const athleteId = athletes[0].id;
         const modalityId = modalities[0].id;
 
-        console.log("\n\n");
-        console.log(athleteId);
-        console.log(modalityId);
-        console.log("\n\n");
+        const [_, countBefore] = await enrollmentRepository.findAndCount();
 
-        request(app)
-            .post(`/api/enrollment`)
+        const response = await request(app)
+            .post(BASE_URL)
             .send(
                 {
                     athleteId,
@@ -128,5 +57,48 @@ describe("testing enrollment subscription", () => {
             )
             .expect('Content-Type', /json/)
             .expect(201)
+
+        console.log(response.body);
+
+
+        const newEnrollment = response.body;
+
+        assert.strictEqual(newEnrollment.modality.id, modalityId);
+        assert.strictEqual(newEnrollment.athlete.id, athleteId);
+
+        const [__, countAfter] = await enrollmentRepository.findAndCount();
+
+        assert.notStrictEqual(countBefore, countAfter);
+    });    
+    test("approved athlete enrollments can be visualized", async () => {
+        const athletes = await athleteRepository.find();
+        const athlete = athletes[0];
+
+        const enrollments = await enrollmentRepository.findOneBy({ athlete: athlete, aproved: true, active: true });
+
+        console.log("\n\n");
+        console.log(athlete);
+        console.log("\n\n");
+
+        const response = await request(app)
+            .get(`${BASE_URL}/${athlete.id}?approved=true&active=true`)
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        const receivedEnrollments = response.body;
+
+        assert.equal(receivedEnrollments, enrollments);
+    })
+    test("all approved enrolments can be visualized", async () => {
+        const dbEnrollements = await enrollmentRepository.findBy({aproved: true});
+
+        const response = await request(app)
+            .get(`${BASE_URL}?approved=true`)
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        const receivedEnrollments = response.body;
+
+        assert.equal(receivedEnrollments.length, dbEnrollements.length);
     });
 })

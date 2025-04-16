@@ -3,3 +3,4 @@
 /dist
 requests/   
 src/db.sqlite
+*.sqlite
