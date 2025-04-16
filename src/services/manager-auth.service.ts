@@ -60,7 +60,7 @@ export class ManagerAuthService {
                     name: manager.name,
                     role: Number(manager.role)
                 },
-                process.env.JWT_SECRET || "osn2in0nmx--!@34noxm",
+                process.env.JWT_SECRET,
                 {
                     expiresIn: "30m"
                 }

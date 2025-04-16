@@ -22,12 +22,20 @@ export const authenticateUser = async (cpf: string, password: string) => {
             }
         });
 
-        if (!athlete) {
-            return {
-                success: false,
-                message: "CPF não encontrado"
-            };
-        }
+            if (!athlete) {
+                console.log("Atleta não encontrado no banco de dados");
+                return {
+                    success: false,
+                    message: "CPF não encontrado"
+                };
+            }
+
+            console.log("Atleta encontrado no banco de dados:", {
+                id: athlete.id,
+                cpf: athlete.cpf,
+                name: athlete.name,
+                role: athlete.role
+            });
 
         const passwordMatch = await bcrypt.compare(password, athlete.password);
 
@@ -38,29 +46,31 @@ export const authenticateUser = async (cpf: string, password: string) => {
             };
         }
 
-        const token = sign(
-            {
-                id: athlete.id,
-                name: athlete.name,
-                role: Number(athlete.role)
-            },
-            process.env.JWT_SECRET,
-            {
-                expiresIn: "30m"
-            }
-        );
-
-        return {
-            success: true,
-            data: {
-                accessToken: token,
-                athlete: {
+            const token = sign(
+                {
                     id: athlete.id,
+                    name: athlete.name,
                     cpf: athlete.cpf,
                     role: Number(athlete.role)
+                },
+                process.env.JWT_SECRET,
+                {
+                    expiresIn: "30m"
                 }
-            }
-        };
+            );
+
+            return {
+                success: true,
+                data: {
+                    accessToken: token,
+                    athlete: {
+                        id: athlete.id,
+                        cpf: athlete.cpf,
+                        name: athlete.name,
+                        role: Number(athlete.role)
+                    }
+                }
+            };
 
     } catch (error) {
         return {

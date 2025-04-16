@@ -11,11 +11,16 @@ interface LoginResponse {
 }
 
 router.post("/login", (req: Request, res: Response) => {
+    console.log("Teacher login route hit");
+    console.log("Request body:", req.body);
+    
     (async () => {
         try {
             const { email, password } = req.body;
+            console.log("Email:", email);
             
             const result = await teacherController.login(req, res) as LoginResponse;
+            console.log("Login result:", result);
 
             if (!result.success) {
                 return res.status(401).json(result);

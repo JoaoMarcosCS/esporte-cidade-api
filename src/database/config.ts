@@ -8,9 +8,9 @@ export const AppDataSource = new DataSource({
   database: join(__dirname, '..', env.NODE_ENV === 'test' ? 'db.test.sqlite' : 'db.sqlite'),
   synchronize: true,
   logging: false,
-  entities: ["src/entities/*.ts"],
-  migrations: ["src/migrations/*.ts"],
-  subscribers: ["src/subscribers/*.ts"],
+  entities: [join(__dirname, "..", "entities", "*.{ts,js}")],
+  migrations: [join(__dirname, "..", "migrations", "*.{ts,js}")],
+  subscribers: [join(__dirname, "..", "subscribers", "*.{ts,js}")],
   dropSchema: env.NODE_ENV === 'test'
 });
 

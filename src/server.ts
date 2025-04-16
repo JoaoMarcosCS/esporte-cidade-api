@@ -5,25 +5,34 @@ import { initializeDatabase } from "./database/config";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5173;
+const PORT = process.env.PORT || 3000;
 
 async function startServer() {
     try {
+        console.log(`Iniciando servidor na porta ${PORT}...`);
+        
         // Inicializar o banco de dados
         await initializeDatabase();
         console.log("Database initialized successfully");
 
-        // Configurar CORS
+        // Middleware para CORS
         app.use((req, res, next) => {
-            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
             res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-            next();
+            res.header('Access-Control-Allow-Credentials', 'true');
+            
+            if (req.method === 'OPTIONS') {
+                res.sendStatus(200);
+            } else {
+                next();
+            }
         });
 
         // Iniciar o servidor
         const server = app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
+            console.log(`API available at http://localhost:${PORT}/api/v1`);
         });
 
         // Adicionar tratamento de encerramento
