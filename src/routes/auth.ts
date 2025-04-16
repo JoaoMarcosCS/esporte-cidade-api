@@ -1,12 +1,11 @@
 import express, { Request, Response, NextFunction } from "express";
 import { ExpressRequest } from "../types/express.d";
-import { AthleteAuthService } from "../services/athlete-auth.service";
+import { authenticateUser } from "../services/athlete-auth.service";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const router = express.Router();
-const athleteAuthService = new AthleteAuthService();
 
 const authenticateAthlete = async (req: ExpressRequest, res: Response, next: NextFunction) => {
     try {
@@ -20,7 +19,7 @@ const authenticateAthlete = async (req: ExpressRequest, res: Response, next: Nex
             return;
         }
 
-        const result = await athleteAuthService.authenticate(cpf, password);
+        const result = await authenticateUser(cpf, password);
 
         if (!result.success) {
             res.status(401).json(result);
