@@ -59,7 +59,7 @@ export class AthleteAuthService {
                     cpf: athlete.cpf,
                     role: Number(athlete.role)
                 },
-                process.env.JWT_SECRET || "osn2in0nmx--!@34noxm",
+                process.env.JWT_SECRET,
                 {
                     expiresIn: "30m"
                 }

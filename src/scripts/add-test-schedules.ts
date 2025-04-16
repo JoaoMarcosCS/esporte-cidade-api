@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { AppDataSource } from "../database/config";
 import { Schedule } from "../entities/schedule.entity";
 import { Teacher } from "../entities/teacher.entity";
