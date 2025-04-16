@@ -2,3 +2,4 @@
 .env
 /dist
 requests/   
+src/db.sqlite
