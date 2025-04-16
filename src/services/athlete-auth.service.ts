@@ -3,7 +3,7 @@ import { AppDataSource } from "../database/config";
 import { sign } from "jsonwebtoken";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import env from "@/environment/env";
+import env from "../environment/env";
 
 dotenv.config();
 
