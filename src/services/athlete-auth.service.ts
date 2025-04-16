@@ -3,6 +3,7 @@ import { AppDataSource } from "../database/config";
 import { sign } from "jsonwebtoken";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import env from "@/environment/env";
 
 dotenv.config();
 
@@ -53,7 +54,7 @@ export const authenticateUser = async (cpf: string, password: string) => {
                     cpf: athlete.cpf,
                     role: Number(athlete.role)
                 },
-                process.env.JWT_SECRET,
+                env.JWT_SECRET,
                 {
                     expiresIn: "30m"
                 }
