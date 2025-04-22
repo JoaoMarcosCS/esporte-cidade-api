@@ -7,8 +7,9 @@ declare global {
     interface Request {
       user?: {
         id: string;
+        name?: string; // Make this required if it should always exist
         role: string;
-        type: 'athlete' | 'teacher' | 'manager';
+        type: "athlete" | "teacher" | "manager";
       };
       accessToken?: string;
     }

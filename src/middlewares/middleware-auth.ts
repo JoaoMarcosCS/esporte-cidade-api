@@ -7,8 +7,9 @@ declare global {
     interface Request {
       user?: { 
         id: string;
+        name?: string; // Consistent with the type declaration
         role: string;
-        type: 'athlete' | 'teacher' | 'manager';
+        type: "athlete" | "teacher" | "manager";
       };
     }
   }
