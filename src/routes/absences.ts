@@ -45,9 +45,20 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
 
     const atendimentos = await query.getMany();
 
+    console.log("Atendimentos encontrados:", atendimentos);
+
+    // Diagnóstico: Se atendimentos está vazio, pode ser por:
+    // 1. Não existem registros de Atendiment para esse atleta no banco.
+    // 2. O nome do atleta não bate exatamente (acentuação, espaços, maiúsculas/minúsculas).
+    // 3. Os registros de Atendiment não estão sendo criados corretamente no momento da chamada.
+
+    // DICA DE DEBUG:
+    // 1. Verifique no banco se há registros na tabela 'atendiment' para esse atleta.
+    // 2. Teste a query diretamente no banco, usando o nome exatamente como está salvo.
+    // 3. Se necessário, troque o filtro para usar o id do atleta ao invés do nome (mais seguro).
+
     //formatar a data
     const formattedData = atendimentos.map(atendimento => {
-    
       return {
         data: atendimento.created_at,
         modalidade: atendimento.modality?.name || "N/A",
@@ -56,13 +67,14 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
       };
     });
 
-
-    const faltas = formattedData.filter(item => !item.present);
+    // Debug: veja o que está sendo filtrado como falta
+    const absences = formattedData.filter(item => !item.present);
+    console.log("Absences filtradas:", absences);
 
     res.status(200).json({
-      absences: formattedData.filter(item => !item.present),
+      absences,
       modalities: athleteModalities,
-      totalAbsences: formattedData.filter(item => !item.present).length
+      totalAbsences: absences.length
     });
     
   } catch (error) {

@@ -63,10 +63,10 @@ export class AthleteController {
         return res.status(404).json({ message: "Atleta não encontrado." });
       }
 
-      // Update fields
+      
       Object.assign(athlete, req.body);
 
-      // Hash the password if it's being updated
+      
       if (req.body.password) {
         athlete.password = await bcrypt.hash(req.body.password, 10);
       }
