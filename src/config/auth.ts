@@ -9,7 +9,7 @@ if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
 export const authConfig = {
   accessToken: {
     secret: process.env.JWT_SECRET,
-    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m'
+    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '7d'
   },
   refreshToken: {
     secret: process.env.JWT_REFRESH_SECRET,

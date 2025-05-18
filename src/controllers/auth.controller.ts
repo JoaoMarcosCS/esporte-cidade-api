@@ -6,7 +6,19 @@ import { TeacherAuthService } from '../services/auth-teacher.service';
 export class AuthController {
   static async login(req: Request, res: Response): Promise<void> {
     try {
+      // Log para depuração do backend
+      console.log("Corpo recebido em /auth/login:", req.body);
+
       const { type, credentials } = req.body;
+
+      // Log para garantir que o campo type está correto
+      console.log("Tipo recebido:", type);
+      console.log("Credenciais recebidas:", credentials);
+
+      // Verificação extra: se type for "manager" mas está vindo "teacher", o frontend não está enviando corretamente
+      if (type === "teacher" && credentials.email && credentials.email.includes("gestor")) {
+        console.warn("ATENÇÃO: Tentativa de login de gestor caiu no fluxo de teacher. O campo 'type' deveria ser 'manager'.");
+      }
 
       let result;
       switch (type) {
