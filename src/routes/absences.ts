@@ -47,36 +47,26 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
 
     console.log("Atendimentos encontrados:", atendimentos);
 
-    // Diagnóstico: Se atendimentos está vazio, pode ser por:
-    // 1. Não existem registros de Atendiment para esse atleta no banco.
-    // 2. O nome do atleta não bate exatamente (acentuação, espaços, maiúsculas/minúsculas).
-    // 3. Os registros de Atendiment não estão sendo criados corretamente no momento da chamada.
-
-    // DICA DE DEBUG:
-    // 1. Verifique no banco se há registros na tabela 'atendiment' para esse atleta.
-    // 2. Teste a query diretamente no banco, usando o nome exatamente como está salvo.
-    // 3. Se necessário, troque o filtro para usar o id do atleta ao invés do nome (mais seguro).
-
-    //formatar a data
+     //formatar a data
     const formattedData = atendimentos.map(atendimento => {
+    
       return {
         data: atendimento.created_at,
         modalidade: atendimento.modality?.name || "N/A",
-        //local: atendimento.modality?.class_locations?.[0] || "N/A",
-        present: atendimento.present
+        router.get("/", authenticate, async (req: Request, res: Response) => {
       };
     });
 
-    // Debug: veja o que está sendo filtrado como falta
-    const absences = formattedData.filter(item => !item.present);
-    console.log("Absences filtradas:", absences);
+
+    const faltas = formattedData.filter(item => !item.present);
+
 
     res.status(200).json({
-      absences,
+      absences: formattedData.filter(item => !item.present),
       modalities: athleteModalities,
-      totalAbsences: absences.length
+      totalAbsences: formattedData.filter(item => !item.present).length
     });
-    
+
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Server error" });
