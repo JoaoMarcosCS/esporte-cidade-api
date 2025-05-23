@@ -103,6 +103,76 @@ export const seedOfAllEntities = async () => {
     console.log(`Atleta criado: ${athlete.name} (ID: ${athlete.id})`);
   }
 
+    var athlete1 = new Athlete();
+    athlete1.name = faker.person.fullName();
+    athlete1.email = "teste@gmail.com"
+    athlete1.password = "senha12345"
+    athlete1.phone = faker.phone.number({ style: "national" });
+    athlete1.cpf = faker.string.numeric(11);
+    athlete1.birthday = faker.date
+      .birthdate({ min: 25, max: 60, mode: "age" })
+      .toISOString()
+      .split("T")[0];
+    athlete1.role = Roles.ATHLETES;
+
+    // Dados do pai
+    athlete1.father_name = faker.person.fullName({ sex: "male" });
+    athlete1.father_phone = faker.phone.number({ style: "national" });
+    athlete1.father_cpf = faker.string.numeric(11); // CPF fictício
+    athlete1.father_email = faker.internet.email({
+      firstName: athlete1.father_name.split(" ")[0],
+    });
+
+    // Dados da mãe
+    athlete1.mother_name = faker.person.fullName({ sex: "female" });
+    athlete1.mother_phone = faker.phone.number({ style: "national" });
+    athlete1.mother_cpf = faker.string.numeric(11);
+    athlete1.mother_email = faker.internet.email({
+      firstName: athlete1.mother_name.split(" ")[0],
+    });
+
+    // Responsável (pode ser pai, mãe ou outro)
+    athlete1.responsible_person_name = faker.helpers.arrayElement([
+      athlete1.father_name,
+      athlete1.mother_name,
+      faker.person.fullName(),
+    ]);
+    athlete1.responsible_person_email = faker.internet.email({
+      firstName: athlete1.responsible_person_name.split(" ")[0],
+    });
+    athlete1.responsible_person_cpf = faker.string.numeric(11);
+
+    // Saúde
+    athlete1.blood_type = faker.helpers.arrayElement([
+      "A+",
+      "B+",
+      "AB+",
+      "O+",
+      "A-",
+      "B-",
+      "AB-",
+      "O-",
+    ]);
+    athlete1.allergy = faker.helpers.arrayElement([
+      "Nenhuma alergia informada",
+      "Amendoim",
+      "Glúten",
+      "Lactose",
+      "Penicilina",
+    ]);
+
+    athlete1.photo_url = faker.image.avatar();
+
+    // Fotos do CPF (URLs fictícias)
+    athlete1.photo_url_cpf_front = faker.image.urlLoremFlickr({
+      category: "document",
+    });
+    athlete1.photo_url_cpf_back = faker.image.urlLoremFlickr({
+      category: "document",
+    });
+
+  await athleteRepository.save(athlete1);
+
   console.log("✅ Seed de atletas concluído!");
 
   const modalityRepository = AppDataSource.getRepository(Modality);
@@ -406,6 +476,26 @@ export const seedOfAllEntities = async () => {
     console.log(`Gestor criado: ${manager.name} | Email: ${manager.email}`);
   }
 
+  const managerDemo = new Manager();
+
+    // Dados de UserBase
+    managerDemo.name = faker.person.fullName();
+    managerDemo.email = "teste@gmail.com"
+    managerDemo.cpf = faker.string.numeric(11); // CPF sem formatação
+    managerDemo.rg = faker.string.numeric(9);
+    managerDemo.birthday = faker.date
+      .birthdate({ min: 30, max: 65, mode: "age" })
+      .toISOString()
+      .split("T")[0];
+    managerDemo.phone = faker.phone.number({ style: "national" }); // Sem formatação
+    managerDemo.photo_url = faker.image.avatar();
+    managerDemo.role = Roles.MANAGER; // Definindo a role como managerDemo
+
+    // Criptografa senha (padrão: "senha123")
+    managerDemo.password = await bcrypt.hash("senha12345", 10)
+
+  await managerRepository.save(managerDemo);
+
   const enrollmentRepository = AppDataSource.getRepository(Enrollment);
 
   // Busca todos os atletas e modalidades
@@ -500,7 +590,7 @@ export const seedOfAllEntities = async () => {
         });
 
         if (activeEnrollments.length === 0) {
-          console.log("      Nenhum atleta ativo. Pulando...");
+          console.log("Nenhum atleta ativo. Pulando...");
           continue;
         }
 
