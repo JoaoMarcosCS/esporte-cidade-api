@@ -1,37 +1,36 @@
 import express, { Router, Request, Response } from "express";
 import { AppDataSource } from "../database/config";
 import { Modality } from "../entities/modality.entity";
+import { Teacher } from "../entities/teacher.entity";
+
 
 const modalityRepository = AppDataSource.getRepository(Modality);
+const teacherRepository = AppDataSource.getRepository(Teacher);
 
 export const modalityService = {
-  async viewModality() {
-    const modalities = await modalityRepository.find({where: { ativo: true }});
-    const modalitiesWithArrays = modalities.map((mod) => ({
-      ...mod,
-      days_of_week: mod.days_of_week?.split(",").map((s) => s.trim()) || [],
-      class_locations:
-        mod.class_locations?.split(",").map((s) => s.trim()) || [],
-    }));
-    return modalitiesWithArrays;
-  },
+async viewModality() {
+  const modalities = await modalityRepository.find({
+    where: { ativo: true },
+    relations: ["teachers"], 
+  });
 
-  async viewModalityById(id: number) {
-    const modality = await modalityRepository.findOneBy({ id, ativo: true });
-    if (!modality) {
-      const error: any = new Error("Modalidade não encontrada");
-      error.status = 404;
-      throw error;
-    }
-    return {
-      ...modality,
-      days_of_week:
-        modality.days_of_week?.split(",").map((s) => s.trim()) || [],
-      class_locations:
-        modality.class_locations?.split(",").map((s) => s.trim()) || [],
-    };
-  },
+  return modalities;
+},
 
+ async viewModalityById(id: number) {
+  const modality = await modalityRepository.findOne({
+    where: { id, ativo: true },
+    relations: ["teachers"],
+  });
+
+  if (!modality) {
+    const error: any = new Error("Modalidade não encontrada");
+    error.status = 404;
+    throw error;
+  }
+
+  return { modality };
+},
   async createModality(data: any) {
     const {
       name,
@@ -102,4 +101,24 @@ export const modalityService = {
 
     return { message: "Modalidade desativada com sucesso" };
   },
+  async assignTeacherToModality(modalityId: number, teacherId: number) {
+  const modality = await modalityRepository.findOneBy({ id: modalityId });
+  if (!modality) {
+    const error: any = new Error("Modalidade não encontrada");
+    error.status = 404;
+    throw error;
+  }
+
+  const teacher = await teacherRepository.findOneBy({ id: teacherId });
+  if (!teacher) {
+    const error: any = new Error("Professor não encontrado");
+    error.status = 404;
+    throw error;
+  }
+
+  teacher.modality = modality;
+  await teacherRepository.save(teacher);
+
+  return { message: "Professor atribuído à modalidade com sucesso" };
+}
 };
