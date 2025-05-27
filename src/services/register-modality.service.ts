@@ -32,38 +32,53 @@ async viewModality() {
   return { modality };
 },
   async createModality(data: any) {
-    const {
-      name,
-      description,
-      days_of_week,
-      start_time,
-      end_time,
-      class_locations,
-    } = data;
+  const {
+    name,
+    description,
+    days_of_week,
+    start_time,
+    end_time,
+    class_locations,
+    teacherId, 
+  } = data;
 
-    const existModality = await modalityRepository.findOneBy({ name });
-    if (existModality) {
-      const error: any = new Error("Modalidade já existente");
-      error.status = 400;
+  const existModality = await modalityRepository.findOneBy({ name });
+  if (existModality) {
+    const error: any = new Error("Modalidade já existente");
+    error.status = 400;
+    throw error;
+  }
+
+  const newModality = modalityRepository.create({
+    name,
+    description,
+    days_of_week: Array.isArray(days_of_week)
+      ? days_of_week.join(", ")
+      : days_of_week,
+    start_time,
+    end_time,
+    class_locations: Array.isArray(class_locations)
+      ? class_locations.join(", ")
+      : class_locations,
+  });
+
+  await modalityRepository.save(newModality);
+
+  if (teacherId) {
+    const teacher = await teacherRepository.findOneBy({ id: teacherId });
+
+    if (!teacher) {
+      const error: any = new Error("Professor não encontrado");
+      error.status = 404;
       throw error;
     }
 
-    const newModality = modalityRepository.create({
-      name,
-      description,
-      days_of_week: Array.isArray(days_of_week)
-        ? days_of_week.join(", ")
-        : days_of_week,
-      start_time,
-      end_time,
-      class_locations: Array.isArray(class_locations)
-        ? class_locations.join(", ")
-        : class_locations,
-    });
+    teacher.modality = newModality;
+    await teacherRepository.save(teacher);
+  }
 
-    await modalityRepository.save(newModality);
-    return { message: "Cadastro realizado com sucesso" };
-  },
+  return { message: "Cadastro realizado com sucesso" };
+},
 
   async updateModality(id: number, data: any) {
     const modality = await modalityRepository.findOneBy({ id });

@@ -9,4 +9,4 @@ router.put("/update/:id", updateModality)
 router.delete("/delete/:id", deleteModality)
 router.put("/assign-teacher/:modalityId", assignTeacherToModality);
 
-export default router;
+export default router; 
