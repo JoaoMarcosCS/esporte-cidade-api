@@ -12,6 +12,14 @@ export class AthleteAuthService extends BaseAuthService<Athlete> {
     });
   }
 
+  protected async findUserById(id:number){
+     console.log("Buscando ATLETA com ID:", id);
+    return this.repository.findOne({
+      where:{id},
+      select:['id', 'cpf', 'name', 'role', 'password']
+    })
+  }
+
   protected getAccessTokenPayload(athlete: Athlete) {
     return {
       id: athlete.id,

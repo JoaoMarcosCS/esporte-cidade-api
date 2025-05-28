@@ -6,7 +6,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: { 
-        id: string;
+        id: number;
         role: string;
         type: 'athlete' | 'teacher' | 'manager';
       };
@@ -25,7 +25,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     const token = authHeader.split(' ')[1];
 
     const decoded = verify(token, authConfig.accessToken.secret) as {
-      id: string;
+      id: number;
       role: string;
       type: string;
     };

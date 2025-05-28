@@ -61,3 +61,4 @@ export const assignTeacherToModality = async (req: Request, res: Response) => {
     });
   }
 };
+

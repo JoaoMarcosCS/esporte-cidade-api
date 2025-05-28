@@ -11,6 +11,13 @@ export class ManagerAuthService extends BaseAuthService<Manager> {
       select: ['id', 'email', 'name', 'role', 'password']
     });
   }
+   protected async findUserById(id:number ){
+    console.log("Buscando MANAGER com ID:", id);
+    return this.repository.findOne({
+      where:{id},
+      select:['id', 'email', 'name', 'role', 'password']
+    })
+  }
 
   protected getAccessTokenPayload(manager: Manager) {
     return {

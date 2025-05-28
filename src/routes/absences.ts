@@ -34,7 +34,6 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
       });
     }
 
-    // seleciona todas as modalidades
     const athleteModalities = await AppDataSource.getRepository(Atendiment)
     .createQueryBuilder("atendiment")
     .leftJoinAndSelect("atendiment.modality", "modality")
