@@ -31,7 +31,7 @@ app.use("/api/absences/", absencesRouter);
 app.use("/api/register/", registerRouter);
 app.use("/api/protect/", authMiddlewareRouter);
 app.use('/api/athletes', athleteRouter)
-app.use('/api/validate-cpf', validCpf)
+app.use('/api/validation', validCpf)
 app.use('/api/use/modality', registerModality)
 
 export default app;
