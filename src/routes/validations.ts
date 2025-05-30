@@ -82,4 +82,38 @@ router.post("/email", async (req, res) => {
     });
   }
 });
+
+router.post("/password", async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        valid: false,
+        message: "Senha não fornecida",
+      });
+    }
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        valid: false,
+        message: "A senha deve ter no mínimo 6 caracteres, contendo pelo menos uma letra e um número.",
+      });
+    }
+
+    return res.status(200).json({
+      valid: true,
+      message: "Senha válida",
+    });
+
+  } catch (error) {
+    console.error("Erro na validação de senha: ", error);
+    return res.status(500).json({
+      valid: false,
+      message: "Erro interno no servidor",
+    });
+  }
+});
 export default router;

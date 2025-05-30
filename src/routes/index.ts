@@ -9,5 +9,6 @@ export {default as enrollmentRouter} from "./enrollment"
 export {default as absencesRouter} from "./absences"
 export {default as registerRouter} from "./register"
 export {default as authMiddlewareRouter} from "./auth-middleware"
-export {default as validCpf} from "./validations"
-export {default as registerModality} from "./registerModality"
+export {default as validations} from "./validations"
+export {default as schedules} from "./schedule"
+
